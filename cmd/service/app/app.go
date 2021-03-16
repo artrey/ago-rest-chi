@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"github.com/artrey/ago-rest-chi/pkg/offers"
 	"github.com/go-chi/chi"
+	"github.com/jackc/pgx/v4"
 	"log"
 	"net/http"
 	"strconv"
@@ -61,8 +62,11 @@ func (s *Server) handleGetOfferByID(writer http.ResponseWriter, request *http.Re
 
 	item, err := s.offersSvc.ByID(request.Context(), id)
 	if err != nil {
-		// TODO: handle not found
-		http.Error(writer, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		if err == pgx.ErrNoRows {
+			http.Error(writer, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		} else {
+			http.Error(writer, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		}
 		return
 	}
 
@@ -107,5 +111,32 @@ func (s *Server) handleSaveOffer(writer http.ResponseWriter, request *http.Reque
 }
 
 func (s *Server) handleRemoveOfferByID(writer http.ResponseWriter, request *http.Request) {
-	panic("not implemented")
+	idParam := chi.URLParam(request, "id")
+	id, err := strconv.ParseInt(idParam, 10, 64)
+	if err != nil {
+		http.Error(writer, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
+		return
+	}
+
+	deletedItem, err := s.offersSvc.DeleteByID(request.Context(), id)
+	if err != nil {
+		if err == pgx.ErrNoRows {
+			http.Error(writer, http.StatusText(http.StatusNotFound), http.StatusNotFound)
+		} else {
+			http.Error(writer, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		}
+		return
+	}
+
+	data, err := json.Marshal(deletedItem)
+	if err != nil {
+		http.Error(writer, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	writer.Header().Set("Content-Type", "application/json")
+	_, err = writer.Write(data)
+	if err != nil {
+		log.Print(err)
+	}
 }

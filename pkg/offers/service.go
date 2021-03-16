@@ -96,3 +96,19 @@ func (s *Service) Save(ctx context.Context, itemToSave *Offer) (*Offer, error) {
 	}
 	return itemToSave, nil
 }
+
+func (s *Service) DeleteByID(ctx context.Context, id int64) (*Offer, error) {
+	item := &Offer{ID: id}
+	err := s.pool.QueryRow(
+		ctx,
+		`DELETE FROM offers WHERE id = $1 RETURNING company, percent, comment`,
+		id,
+	).Scan(&item.Company, &item.Percent, &item.Comment)
+
+	if err != nil {
+		// для no rows уже возвращаем ошибку
+		return nil, err
+	}
+
+	return item, err
+}
