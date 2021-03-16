@@ -1,4 +1,4 @@
-module rest
+module github.com/artrey/ago-rest-chi
 
 go 1.15
 
