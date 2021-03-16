@@ -1,1 +1,1 @@
-simple-offers
+# Simple rest app with chi router
