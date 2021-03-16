@@ -76,7 +76,7 @@ func (s *Service) Save(ctx context.Context, itemToSave *Offer) (*Offer, error) {
 			ctx,
 			`INSERT INTO offers (company, percent, comment) VALUES($1, $2, $3) RETURNING id`,
 			itemToSave.Company, itemToSave.Percent, itemToSave.Comment,
-		).Scan(&itemToSave.ID);
+		).Scan(&itemToSave.ID)
 		if err != nil {
 			return nil, err
 		}

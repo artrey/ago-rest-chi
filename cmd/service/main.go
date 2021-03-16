@@ -2,14 +2,14 @@ package main
 
 import (
 	"context"
+	"github.com/artrey/ago-rest-chi/cmd/service/app"
+	"github.com/artrey/ago-rest-chi/pkg/offers"
 	"github.com/go-chi/chi"
 	"github.com/jackc/pgx/v4/pgxpool"
 	"log"
 	"net"
 	"net/http"
 	"os"
-	"rest/cmd/service/app"
-	"rest/pkg/offers"
 )
 
 const (

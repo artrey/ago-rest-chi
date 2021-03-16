@@ -2,10 +2,10 @@ package app
 
 import (
 	"encoding/json"
+	"github.com/artrey/ago-rest-chi/pkg/offers"
 	"github.com/go-chi/chi"
 	"log"
 	"net/http"
-	"rest/pkg/offers"
 	"strconv"
 )
 
