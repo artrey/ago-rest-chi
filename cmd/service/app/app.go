@@ -2,12 +2,11 @@ package app
 
 import (
 	"encoding/json"
+	"github.com/artrey/ago-rest-chi/cmd/service/rest"
 	"github.com/artrey/ago-rest-chi/pkg/offers"
 	"github.com/go-chi/chi"
 	"github.com/jackc/pgx/v4"
-	"log"
 	"net/http"
-	"strconv"
 )
 
 type Server struct {
@@ -39,22 +38,11 @@ func (s *Server) handleGetOffers(writer http.ResponseWriter, request *http.Reque
 		return
 	}
 
-	data, err := json.Marshal(items)
-	if err != nil {
-		http.Error(writer, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-		return
-	}
-
-	writer.Header().Set("Content-Type", "application/json")
-	_, err = writer.Write(data)
-	if err != nil {
-		log.Print(err)
-	}
+	_ = rest.WriteAsJson(writer, items)
 }
 
 func (s *Server) handleGetOfferByID(writer http.ResponseWriter, request *http.Request) {
-	idParam := chi.URLParam(request, "id")
-	id, err := strconv.ParseInt(idParam, 10, 64)
+	id, err := rest.ExtractID(request)
 	if err != nil {
 		http.Error(writer, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 		return
@@ -70,17 +58,7 @@ func (s *Server) handleGetOfferByID(writer http.ResponseWriter, request *http.Re
 		return
 	}
 
-	data, err := json.Marshal(item)
-	if err != nil {
-		http.Error(writer, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-		return
-	}
-
-	writer.Header().Set("Content-Type", "application/json")
-	_, err = writer.Write(data)
-	if err != nil {
-		log.Print(err)
-	}
+	_ = rest.WriteAsJson(writer, item)
 }
 
 func (s *Server) handleSaveOffer(writer http.ResponseWriter, request *http.Request) {
@@ -97,22 +75,11 @@ func (s *Server) handleSaveOffer(writer http.ResponseWriter, request *http.Reque
 		return
 	}
 
-	data, err := json.Marshal(item)
-	if err != nil {
-		http.Error(writer, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-		return
-	}
-
-	writer.Header().Set("Content-Type", "application/json")
-	_, err = writer.Write(data)
-	if err != nil {
-		log.Print(err)
-	}
+	_ = rest.WriteAsJson(writer, item)
 }
 
 func (s *Server) handleRemoveOfferByID(writer http.ResponseWriter, request *http.Request) {
-	idParam := chi.URLParam(request, "id")
-	id, err := strconv.ParseInt(idParam, 10, 64)
+	id, err := rest.ExtractID(request)
 	if err != nil {
 		http.Error(writer, http.StatusText(http.StatusBadRequest), http.StatusBadRequest)
 		return
@@ -128,15 +95,5 @@ func (s *Server) handleRemoveOfferByID(writer http.ResponseWriter, request *http
 		return
 	}
 
-	data, err := json.Marshal(deletedItem)
-	if err != nil {
-		http.Error(writer, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-		return
-	}
-
-	writer.Header().Set("Content-Type", "application/json")
-	_, err = writer.Write(data)
-	if err != nil {
-		log.Print(err)
-	}
+	_ = rest.WriteAsJson(writer, deletedItem)
 }
